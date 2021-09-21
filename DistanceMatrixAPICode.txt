@@ -1,0 +1,20 @@
+(Origin as text, Destination as text)=>
+let
+    Source = Json.Document(Web.Contents("https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="&Origin&"&destinations="&Destination&"&mode=walking&key=AIzaSyDEWECzzC-9wmzMUkjETE25VVluVTO0JdI")),
+    #"Converted to Table" = Table.FromRecords({Source}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"destination_addresses", type any}, {"origin_addresses", type any}, {"rows", type any}, {"status", type text}}),
+    #"Expanded destination_addresses" = Table.ExpandListColumn(#"Changed Type", "destination_addresses"),
+    #"Expanded origin_addresses" = Table.ExpandListColumn(#"Expanded destination_addresses", "origin_addresses"),
+    #"Reordered Columns" = Table.ReorderColumns(#"Expanded origin_addresses",{"origin_addresses", "destination_addresses", "rows", "status"}),
+    #"Expanded rows" = Table.ExpandListColumn(#"Reordered Columns", "rows"),
+    #"Expanded rows1" = Table.ExpandRecordColumn(#"Expanded rows", "rows", {"elements"}, {"rows.elements"}),
+    #"Expanded rows.elements" = Table.ExpandListColumn(#"Expanded rows1", "rows.elements"),
+    #"Expanded rows.elements1" = Table.ExpandRecordColumn(#"Expanded rows.elements", "rows.elements", {"distance", "duration"}, {"rows.elements.distance", "rows.elements.duration"}),
+    #"Removed Columns" = Table.RemoveColumns(#"Expanded rows.elements1",{"status"}),
+    #"Expanded rows.elements.distance" = Table.ExpandRecordColumn(#"Removed Columns", "rows.elements.distance", {"text"}, {"rows.elements.distance.text"}),
+    #"Expanded rows.elements.duration" = Table.ExpandRecordColumn(#"Expanded rows.elements.distance", "rows.elements.duration", {"text"}, {"rows.elements.duration.text"}),
+    #"Renamed Columns" = Table.RenameColumns(#"Expanded rows.elements.duration",{{"origin_addresses", "Origin"}}),
+    #"Sorted Rows" = Table.Sort(#"Renamed Columns",{{"destination_addresses", Order.Descending}}),
+    #"Renamed Columns1" = Table.RenameColumns(#"Sorted Rows",{{"destination_addresses", "Destination"}, {"rows.elements.distance.text", "Distance"}, {"rows.elements.duration.text", "Duration"}})
+in
+    #"Renamed Columns1"
