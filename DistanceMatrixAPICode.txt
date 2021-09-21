@@ -1,6 +1,6 @@
 (Origin as text, Destination as text)=>
 let
-    Source = Json.Document(Web.Contents("https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="&Origin&"&destinations="&Destination&"&mode=walking&key=AIzaSyDEWECzzC-9wmzMUkjETE25VVluVTO0JdI")),
+    Source = Json.Document(Web.Contents("https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="&Origin&"&destinations="&Destination&"&mode=walking&key=******GOOGLEMATRIXAPIKEY*******")),
     #"Converted to Table" = Table.FromRecords({Source}),
     #"Changed Type" = Table.TransformColumnTypes(#"Converted to Table",{{"destination_addresses", type any}, {"origin_addresses", type any}, {"rows", type any}, {"status", type text}}),
     #"Expanded destination_addresses" = Table.ExpandListColumn(#"Changed Type", "destination_addresses"),
