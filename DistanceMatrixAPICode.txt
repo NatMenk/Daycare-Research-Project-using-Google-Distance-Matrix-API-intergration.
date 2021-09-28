@@ -1,3 +1,6 @@
+## This project utilizes Power BI dashboards. The task was to analyze all the closest daycare facilities based on a few criteria: walking distance from home, duration, and cost. We used Google Distance Matrix API to automatically calculate the distance and duration and embedded it into Power Bi Dashboard. So, the dashboard now reflects the items of interest.
+
+
 (Origin as text, Destination as text)=>
 let
     Source = Json.Document(Web.Contents("https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="&Origin&"&destinations="&Destination&"&mode=walking&key=******GOOGLEMATRIXAPIKEY*******")),
